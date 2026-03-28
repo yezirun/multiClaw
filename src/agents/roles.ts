@@ -8,18 +8,23 @@ export interface RoleDefinition {
   promptTemplate: string;
 }
 
+/**
+ * 8-Agent Role Definitions
+ * Each role has distinct responsibilities in the group chat workflow
+ */
 export const ROLE_DEFINITIONS: Record<AgentRole, RoleDefinition> = {
   cto: {
     role: 'cto',
     name: 'CTO Agent',
-    description: 'Technical leadership and strategic decision-making',
-    capabilities: ['architecture-review', 'tech-decision', 'team-coordination'],
+    description: 'Technical leadership and strategic decision-making (Master Agent)',
+    capabilities: ['orchestration', 'planning', 'coordination', 'escalation'],
     promptTemplate: `You are the CTO Agent responsible for technical leadership.
 Your role is to:
 - Make high-level technical decisions
 - Review architectural proposals
 - Coordinate between different technical teams
-- Ensure technical alignment with business goals`,
+- Ensure technical alignment with business goals
+- Orchestrate task assignment and wrap-up`,
   },
 
   po: {
@@ -32,7 +37,8 @@ Your role is to:
 - Define and prioritize product requirements
 - Create and maintain user stories
 - Manage the product backlog
-- Ensure deliverables meet business needs`,
+- Ensure deliverables meet business needs
+- Clarify requirement boundaries and acceptance criteria`,
   },
 
   architect: {
@@ -45,7 +51,8 @@ Your role is to:
 - Design system architecture
 - Define technical standards and patterns
 - Ensure scalability and maintainability
-- Create technical documentation`,
+- Create technical documentation
+- Solve complex technical problems`,
   },
 
   backend: {
@@ -72,6 +79,19 @@ Your role is to:
 - Implement responsive designs
 - Create reusable components
 - Ensure accessibility and performance`,
+  },
+
+  impl: {
+    role: 'impl',
+    name: 'Implementation Agent',
+    description: 'Implementation execution and bulk task handling',
+    capabilities: ['implementation', 'scaffolding', 'bulk-tasks', 'execution'],
+    promptTemplate: `You are the Implementation Agent responsible for hands-on execution.
+Your role is to:
+- Execute implementation tasks
+- Handle scaffolding and setup
+- Process bulk operations efficiently
+- Bridge design to actual code`,
   },
 
   qa: {
@@ -109,10 +129,121 @@ Your role is to:
   },
 };
 
+/**
+ * Default 8-Agent Registry Configuration
+ * Maps agent IDs to their role definitions
+ */
+export const DEFAULT_AGENT_REGISTRY = [
+  {
+    id: 'agent1-cto',
+    role: 'cto',
+    type: 'master' as const,
+    description: 'Master agent responsible for orchestration, task assignment, and wrap-up',
+    capabilities: ['orchestration', 'planning', 'coordination', 'escalation'],
+    canDelegateTo: [
+      'agent2-po',
+      'agent3-architect',
+      'agent4-backend',
+      'agent5-frontend',
+      'agent6-impl',
+      'agent7-qa',
+      'agent8-devops',
+    ],
+  },
+  {
+    id: 'agent2-po',
+    role: 'po',
+    type: 'specialist' as const,
+    description: 'Requirements analysis, scope definition, acceptance criteria',
+    capabilities: ['requirement_analysis', 'scope_definition', 'acceptance_criteria'],
+  },
+  {
+    id: 'agent3-architect',
+    role: 'architect',
+    type: 'specialist' as const,
+    description: 'Architecture design, tech selection, problem solving',
+    capabilities: ['architecture_design', 'tech_selection', 'problem_solving'],
+  },
+  {
+    id: 'agent4-backend',
+    role: 'backend',
+    type: 'worker' as const,
+    description: 'Backend development, API design, database',
+    capabilities: ['backend_development', 'api_design', 'database'],
+  },
+  {
+    id: 'agent5-frontend',
+    role: 'frontend',
+    type: 'worker' as const,
+    description: 'Frontend development, UI design, interaction',
+    capabilities: ['frontend_development', 'ui_design', 'interaction'],
+  },
+  {
+    id: 'agent6-impl',
+    role: 'impl',
+    type: 'worker' as const,
+    description: 'Implementation execution, scaffolding, bulk tasks',
+    capabilities: ['implementation', 'scaffolding', 'bulk_tasks'],
+  },
+  {
+    id: 'agent7-qa',
+    role: 'qa',
+    type: 'specialist' as const,
+    description: 'Testing, verification, quality assurance',
+    capabilities: ['testing', 'verification', 'quality_assurance'],
+  },
+  {
+    id: 'agent8-devops',
+    role: 'devops',
+    type: 'specialist' as const,
+    description: 'Deployment, release, monitoring',
+    capabilities: ['deployment', 'release', 'monitoring'],
+  },
+];
+
+/**
+ * Discussion order for visible group chat
+ * Defines the sequence of agent participation
+ */
+export const DISCUSSION_ORDER = [
+  'agent1-cto',     // CTO claims
+  'agent2-po',      // PO clarifies
+  'agent3-architect', // Architect designs
+  'agent4-backend',  // Backend plans
+  'agent5-frontend', // Frontend plans
+  'agent6-impl',     // Implementation
+  'agent7-qa',       // QA reviews
+  'agent8-devops',   // DevOps releases
+  'agent1-cto',      // CTO wraps
+];
+
+/**
+ * Minimum specialists that must participate in discussion
+ * Prevents CTO from short-circuiting alone
+ */
+export const MIN_SPECIALIST_PARTICIPANTS = 2;
+
+/**
+ * Specialist agent IDs (non-CTO)
+ */
+export const SPECIALIST_AGENT_IDS = [
+  'agent2-po',
+  'agent3-architect',
+  'agent4-backend',
+  'agent5-frontend',
+  'agent6-impl',
+  'agent7-qa',
+  'agent8-devops',
+];
+
 export function getRoleDefinition(role: AgentRole): RoleDefinition {
   return ROLE_DEFINITIONS[role];
 }
 
 export function getAvailableRoles(): AgentRole[] {
   return Object.keys(ROLE_DEFINITIONS) as AgentRole[];
+}
+
+export function getAgentRegistry(): typeof DEFAULT_AGENT_REGISTRY {
+  return DEFAULT_AGENT_REGISTRY;
 }

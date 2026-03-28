@@ -1,5 +1,11 @@
 import { BaseAgent, createAgentMessage } from './base';
-import { ROLE_DEFINITIONS } from './roles';
+import {
+  ROLE_DEFINITIONS,
+  DEFAULT_AGENT_REGISTRY,
+  DISCUSSION_ORDER,
+  MIN_SPECIALIST_PARTICIPANTS,
+  SPECIALIST_AGENT_IDS,
+} from './roles';
 import type { AgentRole, Message } from '../types';
 
 export class CTOAgent extends BaseAgent {
@@ -144,6 +150,37 @@ export class FrontendAgent extends BaseAgent {
   }
 }
 
+export class ImplAgent extends BaseAgent {
+  constructor() {
+    super({
+      name: ROLE_DEFINITIONS.impl.name,
+      role: 'impl',
+      description: ROLE_DEFINITIONS.impl.description,
+      capabilities: ROLE_DEFINITIONS.impl.capabilities,
+    });
+  }
+
+  async process(input: string, context?: Record<string, unknown>): Promise<string> {
+    this.logActivity('Processing implementation task', { input: input.slice(0, 100) });
+
+    const response = `[Implementation] "${input.slice(0, 50)}..." executed.`;
+
+    return response;
+  }
+
+  async executeBulkTasks(tasks: string[]): Promise<Message[]> {
+    this.logActivity('Executing bulk tasks', { taskCount: tasks.length });
+
+    const results: Message[] = [];
+    for (const task of tasks) {
+      const result = await this.process(task, { type: 'bulk-task' });
+      results.push(createAgentMessage('impl', result, { type: 'implementation' }));
+    }
+
+    return results;
+  }
+}
+
 export class QAAgent extends BaseAgent {
   constructor() {
     super({
@@ -194,6 +231,8 @@ export function createAgent(role: AgentRole): BaseAgent {
       return new BackendAgent();
     case 'frontend':
       return new FrontendAgent();
+    case 'impl':
+      return new ImplAgent();
     case 'qa':
       return new QAAgent();
     case 'devops':
@@ -202,3 +241,11 @@ export function createAgent(role: AgentRole): BaseAgent {
       throw new Error(`Unknown agent role: ${role}`);
   }
 }
+
+// Export registry and constants
+export {
+  DEFAULT_AGENT_REGISTRY,
+  DISCUSSION_ORDER,
+  MIN_SPECIALIST_PARTICIPANTS,
+  SPECIALIST_AGENT_IDS,
+};
