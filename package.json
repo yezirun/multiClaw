@@ -40,10 +40,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/<YOUR_GITHUB_NAME>/multiClaw.git"
+    "url": "https://github.com/yezirun/multiClaw.git"
   },
   "bugs": {
-    "url": "https://github.com/<YOUR_GITHUB_NAME>/multiClaw/issues"
+    "url": "https://github.com/yezirun/multiClaw/issues"
   },
-  "homepage": "https://github.com/<YOUR_GITHUB_NAME>/multiClaw#readme"
+  "homepage": "https://github.com/yezirun/multiClaw#readme"
 }
