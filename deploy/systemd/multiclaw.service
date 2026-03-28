@@ -1,0 +1,26 @@
+[Unit]
+Description=MultiClaw Runtime Service
+Documentation=https://github.com/<YOUR_GITHUB_NAME>/multiClaw
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=<PROJECT_ROOT>
+EnvironmentFile=<PROJECT_ROOT>/.env
+ExecStart=/usr/bin/env node <PROJECT_ROOT>/dist/index.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=multiclaw
+
+# Security settings
+User=nobody
+Group=nogroup
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
