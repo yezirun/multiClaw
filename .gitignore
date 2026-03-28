@@ -25,6 +25,8 @@ build/
 
 # Dependencies
 node_modules/
+# npm lockfile (project uses pnpm)
+package-lock.json
 
 # IDE
 .idea/
