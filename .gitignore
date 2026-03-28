@@ -11,8 +11,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Runtime state
-runtime/
+# Runtime state (only root level)
+/runtime/
 state/
 checkpoints/
 .cache/
@@ -54,6 +54,20 @@ temp/
 credentials.json
 secrets.json
 config.local.*
+
+# OpenClaw private configuration
+.openclaw/
+openclaw.json
+openclaw.local.json
+
+# Session and state files
+session-*.json
+*.session
+*.state
+
+# Feishu message tracking
+message-*.json
+*.message-id
 
 # Personal configs
 *.local.json
